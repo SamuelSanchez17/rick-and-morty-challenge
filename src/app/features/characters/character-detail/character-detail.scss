@@ -7,7 +7,7 @@
 .detail-error {
   text-align: center;
   padding: 3rem;
-  color: #e74c6f;
+  color: #f06088;
 
   a {
     display: inline-block;
@@ -91,7 +91,7 @@
     }
 
     &--unknown {
-      background: #6a6a8a;
+      background: #9090aa;
       color: #fff;
     }
   }
@@ -151,7 +151,7 @@
   &__meta-item {
     dt {
       font-size: 0.75rem;
-      color: #6a6a8a;
+      color: #9090aa;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-weight: 600;
@@ -200,7 +200,7 @@
   }
 
   &__date {
-    color: #6a6a8a;
+    color: #9090aa;
     font-size: 0.85rem;
   }
 }

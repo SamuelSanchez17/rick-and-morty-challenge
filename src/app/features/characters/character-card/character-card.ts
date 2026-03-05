@@ -96,7 +96,7 @@ import { FavoritesService, TranslationService } from '../../../core/services';
     }
 
     .card__status--unknown {
-      background: #6a6a8a;
+      background: #9090aa;
       color: #fff;
     }
 
@@ -122,7 +122,7 @@ import { FavoritesService, TranslationService } from '../../../core/services';
     .card__location {
       margin: 0.5rem 0 0;
       font-size: 0.8rem;
-      color: #6a8a80;
+      color: #8aaa9e;
     }
 
     .card__actions {

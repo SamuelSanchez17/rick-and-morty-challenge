@@ -64,10 +64,11 @@ export class CharacterDetailComponent implements OnInit {
 
   private loadEpisodes(episodeUrls: string[]): void {
     const ids = episodeUrls.map((url) => Number(url.split('/').pop()));
+    const errorHandler = { error: (err: unknown) => console.error('Failed to load episodes:', err) };
     if (ids.length === 1) {
-      this.api.getEpisode(ids[0]).subscribe((ep) => this.episodes.set([ep]));
+      this.api.getEpisode(ids[0]).subscribe({ next: (ep) => this.episodes.set([ep]), ...errorHandler });
     } else if (ids.length > 1) {
-      this.api.getEpisodes(ids).subscribe((eps) => this.episodes.set(eps));
+      this.api.getEpisodes(ids).subscribe({ next: (eps) => this.episodes.set(eps), ...errorHandler });
     }
   }
 }

@@ -85,7 +85,7 @@ import { TranslationService } from '../../../core/services';
         font-size: 0.9rem;
 
         &::placeholder {
-          color: #6a6a8a;
+          color: #9090aa;
         }
 
         &:focus {

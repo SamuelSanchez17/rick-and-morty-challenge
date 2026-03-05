@@ -39,10 +39,14 @@ export class FavoritesService {
   }
 
   async toggleFavorite(character: Character): Promise<void> {
-    if (this.isFavorite(character.id)) {
-      await this.removeFavorite(character.id);
-    } else {
-      await this.addFavorite(character);
+    try {
+      if (this.isFavorite(character.id)) {
+        await this.removeFavorite(character.id);
+      } else {
+        await this.addFavorite(character);
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
     }
   }
 
@@ -68,14 +72,20 @@ export class FavoritesService {
   private listenToFavorites(): void {
     const colRef = collection(this.firebase.firestore, FAVORITES_COLLECTION);
 
-    this.unsubscribe = onSnapshot(colRef, (snapshot) => {
-      const map = new Map<number, FavoriteCharacter>();
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data() as FavoriteCharacter;
-        map.set(data.id, data);
-      });
-      this._favorites.set(map);
-    });
+    this.unsubscribe = onSnapshot(
+      colRef,
+      (snapshot) => {
+        const map = new Map<number, FavoriteCharacter>();
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data() as FavoriteCharacter;
+          map.set(data.id, data);
+        });
+        this._favorites.set(map);
+      },
+      (error) => {
+        console.error('Firestore listener error:', error);
+      },
+    );
   }
 
   destroy(): void {
