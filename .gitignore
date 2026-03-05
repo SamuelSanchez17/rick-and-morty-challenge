@@ -39,6 +39,10 @@ testem.log
 /typings
 __screenshots__/
 
+# Environment files (contain Firebase credentials)
+src/app/environments/environment.ts
+src/app/environments/environment.development.ts
+
 # System files
 .DS_Store
 Thumbs.db
