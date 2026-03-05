@@ -1,0 +1,86 @@
+@if (loading()) {
+  <div class="detail-loading" role="status" aria-live="polite">
+    <p>Cargando personaje...</p>
+  </div>
+} @else if (character(); as char) {
+  <article class="detail">
+    <a routerLink="/characters" class="detail__back" aria-label="Volver a la lista de personajes">← Volver</a>
+
+    <div class="detail__header">
+      <div class="detail__image-wrapper">
+        <img
+          [src]="char.image"
+          [alt]="'Foto de ' + char.name"
+          class="detail__image"
+          width="300"
+          height="300"
+        />
+        <span class="detail__status" [class]="'detail__status--' + char.status.toLowerCase()">
+          {{ char.status }}
+        </span>
+      </div>
+
+      <div class="detail__info">
+        <div class="detail__title-row">
+          <h1 class="detail__name">{{ char.name }}</h1>
+          <button
+            class="detail__fav-btn"
+            [class.detail__fav-btn--active]="isFavorite()"
+            (click)="toggleFavorite()"
+            [attr.aria-label]="isFavorite() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            [attr.aria-pressed]="isFavorite()"
+          >
+            {{ isFavorite() ? '❤️' : '🤍' }}
+          </button>
+        </div>
+
+        <dl class="detail__meta">
+          <div class="detail__meta-item">
+            <dt>Especie</dt>
+            <dd>{{ char.species }}</dd>
+          </div>
+          @if (char.type) {
+            <div class="detail__meta-item">
+              <dt>Tipo</dt>
+              <dd>{{ char.type }}</dd>
+            </div>
+          }
+          <div class="detail__meta-item">
+            <dt>Género</dt>
+            <dd>{{ char.gender }}</dd>
+          </div>
+          <div class="detail__meta-item">
+            <dt>Origen</dt>
+            <dd>{{ char.origin.name }}</dd>
+          </div>
+          <div class="detail__meta-item">
+            <dt>Ubicación</dt>
+            <dd>{{ char.location.name }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    @if (episodes().length > 0) {
+      <section class="detail__episodes" aria-labelledby="episodes-heading">
+        <h2 id="episodes-heading" class="detail__section-title">
+          Episodios ({{ episodes().length }})
+        </h2>
+        <ul class="episodes-list" role="list">
+          @for (ep of episodes(); track ep.id) {
+            <li class="episode-item">
+              <span class="episode-item__code">{{ ep.episode }}</span>
+              <span class="episode-item__name">{{ ep.name }}</span>
+              <span class="episode-item__date">{{ ep.air_date }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </article>
+} @else {
+  <div class="detail-error" role="alert">
+    <p>No se encontró el personaje.</p>
+    <a routerLink="/characters">Volver a la lista</a>
+  </div>
+}

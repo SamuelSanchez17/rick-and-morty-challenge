@@ -1,55 +1,109 @@
 
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# Rick & Morty Challenge – Enacment
 
-## TypeScript Best Practices
+## Proyecto
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
+Aplicación Angular que consume la Rick and Morty API para listar, filtrar y ver detalle de personajes, con sistema de favoritos persistidos en Firestore.
 
-## Angular Best Practices
+- **URL de despliegue**: https://enacment-rick-morty.web.app
+- **Firebase project**: `enacment-rick-morty`
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+## Stack Técnico
 
-## Accessibility Requirements
+| Tecnología | Versión |
+|---|---|
+| Angular | 21.2 |
+| TypeScript | 5.9.2 |
+| Firebase SDK | 12.10 |
+| Vitest | 4.0.8 |
+| SCSS | (inline language en angular.json) |
+| Node package manager | npm 11.6.2 |
 
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+## Comandos
 
-### Components
+```bash
+npm start          # ng serve → http://localhost:4200
+npm run build      # ng build (producción por defecto)
+npm test           # ng test (Vitest)
+firebase deploy    # despliega a https://enacment-rick-morty.web.app
+```
 
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
+## Arquitectura
 
-## State Management
+```
+src/app/
+  app.ts                    → Componente raíz (inline template: <router-outlet />)
+  app.config.ts             → provideRouter, provideHttpClient
+  app.routes.ts             → Layout wrapper + lazy routes
+  core/
+    models/                 → Interfaces: Character, Episode, Location, ApiResponse
+      index.ts              → barrel re-exports (usa `export type`)
+    services/
+      firebase.service.ts   → Inicializa FirebaseApp + Firestore
+      rick-and-morty-api.service.ts → HttpClient wrapper para la API
+      favorites.service.ts  → CRUD Firestore + signals reactivos
+      index.ts              → barrel re-exports
+  features/
+    characters/
+      characters.routes.ts  → lazy routes: '' → list, ':id' → detail
+      character-card/       → Tarjeta de personaje (inline template)
+      character-detail/     → Vista detalle (template + scss externos)
+      character-filters/    → Formulario reactivo de filtros (inline template)
+      character-list/       → Listado paginado (template + scss externos)
+    favorites/
+      favorites.routes.ts   → lazy route: '' → favorites-list
+      favorites-list/       → Lista de favoritos (inline template)
+  shared/
+    components/
+      layout/               → Layout con navbar + <router-outlet>
+      navbar/               → Navegación con badge de favoritos
+  environments/
+    environment.ts          → Config producción (Firebase + API URL)
+    environment.development.ts → Config desarrollo
+```
 
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
+## API Externa
 
-## Templates
+- Base URL: `https://rickandmortyapi.com/api`
+- Endpoints usados: `/character`, `/character/:id`, `/episode/:id`, `/episode/:ids`
+- Filtros: `name`, `status`, `species`, `gender`, `page`
 
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
+## Firebase
 
-## Services
+- Hosting: `dist/rick-and-morty-challenge-enacment/browser` con SPA rewrite
+- Firestore: colección `favorites` con documentos por ID de personaje
+- Reglas: lectura/escritura abierta hasta 2026-04-04
 
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
+## Decisiones Clave
+
+- "Mi toque diferenciador": Favoritos con persistencia en Firestore usando Firebase JS SDK directo (no @angular/fire)
+- Todos los componentes son standalone (default en Angular 21, NO poner `standalone: true`)
+- Signals para estado local, `computed()` para estado derivado
+- `ChangeDetectionStrategy.OnPush` en todos los componentes
+- Todas las rutas de features usan lazy loading (`loadChildren` / `loadComponent`)
+- Formularios reactivos (no template-driven)
+- `inject()` en vez de constructor injection
+
+## Convenciones de Código
+
+### TypeScript
+- Strict mode + `isolatedModules` (usar `export type` para re-exportar tipos)
+- Evitar `any`, usar `unknown` si el tipo es incierto
+- Preferir inferencia de tipos cuando es obvio
+
+### Angular
+- NO usar `@HostBinding` / `@HostListener` → usar `host` en el decorador
+- NO usar `ngClass` / `ngStyle` → usar bindings `[class]` / `[style]`
+- Usar `input()` y `output()` en vez de decoradores `@Input` / `@Output`
+- Control flow nativo: `@if`, `@for`, `@switch` (no directivas estructurales)
+- Templates inline para componentes pequeños
+- Templates externos con rutas relativas al archivo TS
+
+### Accesibilidad
+- Debe pasar todas las verificaciones AXE
+- Cumplir WCAG AA: focus management, contraste, atributos ARIA
+- `aria-label`, `aria-live`, `role` aplicados correctamente
+
+### Formato
+- Prettier: `printWidth: 100`, `singleQuote: true`, parser `angular` para HTML
+- EditorConfig: indent 2 espacios, UTF-8, single quotes en TS

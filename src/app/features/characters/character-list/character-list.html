@@ -1,0 +1,57 @@
+<section class="character-list">
+  <h1 class="character-list__title">Personajes</h1>
+
+  <app-character-filters (filtersChanged)="onFiltersChanged($event)" />
+
+  @if (loading()) {
+    <div class="character-list__loading" role="status" aria-live="polite">
+      <p>Cargando personajes...</p>
+    </div>
+  }
+
+  @if (error(); as errorMsg) {
+    <div class="character-list__error" role="alert">
+      <p>{{ errorMsg }}</p>
+    </div>
+  }
+
+  @if (!loading() && !error() && characters().length > 0) {
+    <div class="character-list__grid" role="list">
+      @for (character of characters(); track character.id) {
+        <div role="listitem">
+          <app-character-card
+            [character]="character"
+            (viewDetail)="viewDetail($event)"
+            (toggleFav)="toggleFavorite($event)"
+          />
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Paginación de personajes">
+        <button
+          class="pagination__btn"
+          [disabled]="currentPage() <= 1"
+          (click)="goToPage(currentPage() - 1)"
+          aria-label="Página anterior"
+        >
+          ← Anterior
+        </button>
+
+        <span class="pagination__info">
+          Página {{ currentPage() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          class="pagination__btn"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+          aria-label="Página siguiente"
+        >
+          Siguiente →
+        </button>
+      </nav>
+    }
+  }
+</section>
