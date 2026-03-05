@@ -1,47 +1,50 @@
-import { Component, ChangeDetectionStrategy, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, merge } from 'rxjs';
 import type { CharacterFilters } from '../../../core/models';
+import { TranslationService } from '../../../core/services';
 
 @Component({
   selector: 'app-character-filters',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   template: `
-    <form [formGroup]="form" (ngSubmit)="applyFilters()" class="filters" role="search" aria-label="Filtrar personajes">
+    <form [formGroup]="form" (ngSubmit)="applyFilters()" class="filters" role="search" [attr.aria-label]="t().filterAriaLabel">
       <div class="filters__field">
-        <label for="filter-name">Nombre</label>
-        <input id="filter-name" formControlName="name" type="text" placeholder="Buscar por nombre..." />
+        <label for="filter-name">{{ t().filterName }}</label>
+        <input id="filter-name" formControlName="name" type="text" [placeholder]="t().filterNamePlaceholder" />
       </div>
 
       <div class="filters__field">
-        <label for="filter-status">Estado</label>
+        <label for="filter-status">{{ t().filterStatus }}</label>
         <select id="filter-status" formControlName="status">
-          <option value="">Todos</option>
-          <option value="Alive">Vivo</option>
-          <option value="Dead">Muerto</option>
-          <option value="unknown">Desconocido</option>
+          <option value="">{{ t().filterAll }}</option>
+          <option value="Alive">{{ t().filterAlive }}</option>
+          <option value="Dead">{{ t().filterDead }}</option>
+          <option value="unknown">{{ t().filterUnknown }}</option>
         </select>
       </div>
 
       <div class="filters__field">
-        <label for="filter-species">Especie</label>
-        <input id="filter-species" formControlName="species" type="text" placeholder="Human, Alien..." />
+        <label for="filter-species">{{ t().filterSpecies }}</label>
+        <input id="filter-species" formControlName="species" type="text" [placeholder]="t().filterSpeciesPlaceholder" />
       </div>
 
       <div class="filters__field">
-        <label for="filter-gender">Género</label>
+        <label for="filter-gender">{{ t().filterGender }}</label>
         <select id="filter-gender" formControlName="gender">
-          <option value="">Todos</option>
-          <option value="Female">Femenino</option>
-          <option value="Male">Masculino</option>
-          <option value="Genderless">Sin género</option>
-          <option value="unknown">Desconocido</option>
+          <option value="">{{ t().filterAll }}</option>
+          <option value="Female">{{ t().filterFemale }}</option>
+          <option value="Male">{{ t().filterMale }}</option>
+          <option value="Genderless">{{ t().filterGenderless }}</option>
+          <option value="unknown">{{ t().filterUnknown }}</option>
         </select>
       </div>
 
       <div class="filters__actions">
-        <button type="submit" class="btn btn--primary">Buscar</button>
-        <button type="button" class="btn btn--secondary" (click)="clearFilters()">Limpiar</button>
+        <button type="submit" class="btn btn--primary">{{ t().filterSearch }}</button>
+        <button type="button" class="btn btn--secondary" (click)="clearFilters()">{{ t().filterClear }}</button>
       </div>
     </form>
   `,
@@ -133,6 +136,8 @@ export class CharacterFiltersComponent {
   readonly filtersChanged = output<Partial<CharacterFilters>>();
 
   private readonly fb = new FormBuilder();
+  private readonly translationService = inject(TranslationService);
+  protected readonly t = this.translationService.t;
 
   readonly form = this.fb.nonNullable.group({
     name: [''],
@@ -141,13 +146,22 @@ export class CharacterFiltersComponent {
     gender: [''],
   });
 
+  constructor() {
+    merge(this.form.controls.name.valueChanges, this.form.controls.species.valueChanges)
+      .pipe(debounceTime(300), takeUntilDestroyed())
+      .subscribe(() => this.emitFilters());
+  }
+
   applyFilters(): void {
-    const value = this.form.getRawValue();
-    this.filtersChanged.emit(value as Partial<CharacterFilters>);
+    this.emitFilters();
   }
 
   clearFilters(): void {
     this.form.reset();
     this.filtersChanged.emit({});
+  }
+
+  private emitFilters(): void {
+    this.filtersChanged.emit(this.form.getRawValue() as Partial<CharacterFilters>);
   }
 }
