@@ -84,6 +84,11 @@ import { FavoritesService, TranslationService } from '../../../core/services';
       border-radius: 12px;
       transition: background 0.2s;
 
+      @media (max-width: 480px) {
+        gap: 0.75rem;
+        padding: 0.6rem;
+      }
+
       &:hover {
         background: #1e1e36;
       }
@@ -94,16 +99,25 @@ import { FavoritesService, TranslationService } from '../../../core/services';
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
+
+        @media (max-width: 480px) {
+          width: 48px;
+          height: 48px;
+        }
       }
 
       &__body {
         flex: 1;
+        min-width: 0;
       }
 
       &__name {
         margin: 0;
         color: #fff;
         font-size: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       &__meta {
@@ -121,6 +135,12 @@ import { FavoritesService, TranslationService } from '../../../core/services';
         font-weight: 600;
         cursor: pointer;
         font-size: 0.85rem;
+        flex-shrink: 0;
+
+        @media (max-width: 480px) {
+          padding: 0.4rem 0.75rem;
+          font-size: 0.8rem;
+        }
 
         &:hover {
           background: #143b6e;

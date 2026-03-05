@@ -49,6 +49,13 @@ import { LanguageToggleComponent } from '../language-toggle/language-toggle';
       position: sticky;
       top: 0;
       z-index: 100;
+
+      @media (max-width: 600px) {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 0.5rem 1rem;
+        gap: 0.25rem;
+      }
     }
 
     .navbar__brand {
@@ -59,6 +66,10 @@ import { LanguageToggleComponent } from '../language-toggle/language-toggle';
       font-weight: 700;
       color: #00d4aa;
       text-decoration: none;
+
+      @media (max-width: 600px) {
+        font-size: 1.1rem;
+      }
     }
 
     .navbar__logo {
@@ -69,6 +80,12 @@ import { LanguageToggleComponent } from '../language-toggle/language-toggle';
       display: flex;
       align-items: center;
       gap: 1.25rem;
+
+      @media (max-width: 600px) {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
     }
 
     .navbar__links {
@@ -77,6 +94,10 @@ import { LanguageToggleComponent } from '../language-toggle/language-toggle';
       gap: 1rem;
       margin: 0;
       padding: 0;
+
+      @media (max-width: 600px) {
+        gap: 0.25rem;
+      }
 
       a {
         display: flex;
@@ -88,6 +109,11 @@ import { LanguageToggleComponent } from '../language-toggle/language-toggle';
         border-radius: 8px;
         font-weight: 500;
         transition: color 0.2s, background 0.2s;
+
+        @media (max-width: 600px) {
+          padding: 0.4rem 0.6rem;
+          font-size: 0.85rem;
+        }
 
         &:hover,
         &:focus-visible {

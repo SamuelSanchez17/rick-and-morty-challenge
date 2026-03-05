@@ -58,6 +58,11 @@ import { TranslationService } from '../../../core/services';
       background: #1a1a2e;
       border-radius: 12px;
       margin-bottom: 1.5rem;
+
+      @media (max-width: 600px) {
+        gap: 0.75rem;
+        padding: 0.75rem;
+      }
     }
 
     .filters__field {
@@ -66,6 +71,10 @@ import { TranslationService } from '../../../core/services';
       gap: 0.3rem;
       flex: 1;
       min-width: 160px;
+
+      @media (max-width: 480px) {
+        min-width: 100%;
+      }
 
       label {
         font-size: 0.8rem;
@@ -100,6 +109,14 @@ import { TranslationService } from '../../../core/services';
       display: flex;
       gap: 0.5rem;
       align-items: flex-end;
+
+      @media (max-width: 480px) {
+        width: 100%;
+
+        .btn {
+          flex: 1;
+        }
+      }
     }
 
     .btn {

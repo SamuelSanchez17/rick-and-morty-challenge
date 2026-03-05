@@ -29,6 +29,10 @@ import { ScrollToTopComponent } from '../../components/scroll-to-top/scroll-to-t
       max-width: 1200px;
       width: 100%;
       margin: 0 auto;
+
+      @media (max-width: 600px) {
+        padding: 1rem 0.75rem;
+      }
     }
   `,
 })
