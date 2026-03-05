@@ -69,6 +69,7 @@ const ES = {
   characterDirectory: 'directorio de personajes',
   andAddFavorites: 'y agrega tus favoritos.',
   viewArrow: 'Ver →',
+  scrollToTop: 'Volver arriba',
 };
 
 export type Translations = Record<keyof typeof ES, string>;
@@ -140,6 +141,7 @@ const EN: Translations = {
   characterDirectory: 'character directory',
   andAddFavorites: 'and add your favorites.',
   viewArrow: 'View →',
+  scrollToTop: 'Scroll to top',
 };
 
 const TRANSLATIONS: Record<Language, Translations> = { es: ES, en: EN };

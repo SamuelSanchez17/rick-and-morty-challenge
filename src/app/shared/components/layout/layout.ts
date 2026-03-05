@@ -1,17 +1,19 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar';
+import { ScrollToTopComponent } from '../../components/scroll-to-top/scroll-to-top';
 
 
 @Component({
   selector: 'app-layout',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, ScrollToTopComponent],
   template: `
     <app-navbar />
     <main class="layout__content">
       <router-outlet />
     </main>
+    <app-scroll-to-top />
   `,
   styles: `
     :host {
