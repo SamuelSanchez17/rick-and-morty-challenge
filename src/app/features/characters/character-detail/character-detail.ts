@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { RickAndMortyApiService, FavoritesService } from '../../../core/services';
+import { RickAndMortyApiService, FavoritesService, TranslationService } from '../../../core/services';
 import type { Character, Episode } from '../../../core/models';
 
 @Component({
@@ -14,6 +14,9 @@ export class CharacterDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(RickAndMortyApiService);
   private readonly favoritesService = inject(FavoritesService);
+  private readonly translationService = inject(TranslationService);
+
+  protected readonly t = this.translationService.t;
 
   protected readonly character = signal<Character | null>(null);
   protected readonly episodes = signal<Episode[]>([]);

@@ -1,11 +1,11 @@
 <section class="character-list">
-  <h1 class="character-list__title">Personajes</h1>
+  <h1 class="character-list__title">{{ t().charactersTitle }}</h1>
 
   <app-character-filters (filtersChanged)="onFiltersChanged($event)" />
 
   @if (loading()) {
     <div class="character-list__loading" role="status" aria-live="polite">
-      <p>Cargando personajes...</p>
+      <p>{{ t().loadingCharacters }}</p>
     </div>
   }
 
@@ -29,27 +29,27 @@
     </div>
 
     @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Paginación de personajes">
+      <nav class="pagination" [attr.aria-label]="t().paginationLabel">
         <button
           class="pagination__btn"
           [disabled]="currentPage() <= 1"
           (click)="goToPage(currentPage() - 1)"
-          aria-label="Página anterior"
+          [attr.aria-label]="t().previousPageLabel"
         >
-          ← Anterior
+          {{ t().previousPage }}
         </button>
 
         <span class="pagination__info">
-          Página {{ currentPage() }} de {{ totalPages() }}
+          {{ t().page }} {{ currentPage() }} {{ t().of }} {{ totalPages() }}
         </span>
 
         <button
           class="pagination__btn"
           [disabled]="currentPage() >= totalPages()"
           (click)="goToPage(currentPage() + 1)"
-          aria-label="Página siguiente"
+          [attr.aria-label]="t().nextPageLabel"
         >
-          Siguiente →
+          {{ t().nextPage }}
         </button>
       </nav>
     }

@@ -1,18 +1,18 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { FavoritesService } from '../../../core/services';
+import { FavoritesService, TranslationService } from '../../../core/services';
 
 @Component({
   selector: 'app-favorites-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="favorites">
-      <h1 class="favorites__title">Mis Favoritos</h1>
+      <h1 class="favorites__title">{{ t().favoritesTitle }}</h1>
 
       @if (favorites().length === 0) {
         <div class="favorites__empty">
-          <p>Aún no tienes personajes favoritos.</p>
-          <p>Explora el <a (click)="goToCharacters()" tabindex="0" role="link">directorio de personajes</a> y agrega tus favoritos.</p>
+          <p>{{ t().noFavorites }}</p>
+          <p>{{ t().exploreFavorites }} <a (click)="goToCharacters()" tabindex="0" role="link">{{ t().characterDirectory }}</a> {{ t().andAddFavorites }}</p>
         </div>
       } @else {
         <div class="favorites__grid" role="list">
@@ -33,9 +33,9 @@ import { FavoritesService } from '../../../core/services';
               <button
                 class="fav-card__action"
                 (click)="goToDetail(fav.id)"
-                aria-label="Ver detalle de {{ fav.name }}"
+                [attr.aria-label]="t().viewDetailOf + ' ' + fav.name"
               >
-                Ver →
+                {{ t().viewArrow }}
               </button>
             </article>
           }
@@ -137,8 +137,10 @@ import { FavoritesService } from '../../../core/services';
 export class FavoritesListComponent {
   private readonly favoritesService = inject(FavoritesService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   protected readonly favorites = this.favoritesService.favorites;
+  protected readonly t = this.translationService.t;
 
   protected goToCharacters(): void {
     this.router.navigate(['/characters']);

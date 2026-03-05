@@ -1,10 +1,10 @@
 @if (loading()) {
   <div class="detail-loading" role="status" aria-live="polite">
-    <p>Cargando personaje...</p>
+    <p>{{ t().loadingCharacter }}</p>
   </div>
 } @else if (character(); as char) {
   <article class="detail">
-    <a routerLink="/characters" class="detail__back" aria-label="Volver a la lista de personajes">← Volver</a>
+    <a routerLink="/characters" class="detail__back" [attr.aria-label]="t().backToListLabel">{{ t().backToList }}</a>
 
     <div class="detail__header">
       <div class="detail__image-wrapper">
@@ -27,7 +27,7 @@
             class="detail__fav-btn"
             [class.detail__fav-btn--active]="isFavorite()"
             (click)="toggleFavorite()"
-            [attr.aria-label]="isFavorite() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            [attr.aria-label]="isFavorite() ? t().removeFromFavorites : t().addToFavorites"
             [attr.aria-pressed]="isFavorite()"
           >
             {{ isFavorite() ? '❤️' : '🤍' }}
@@ -36,25 +36,25 @@
 
         <dl class="detail__meta">
           <div class="detail__meta-item">
-            <dt>Especie</dt>
+            <dt>{{ t().detailSpecies }}</dt>
             <dd>{{ char.species }}</dd>
           </div>
           @if (char.type) {
             <div class="detail__meta-item">
-              <dt>Tipo</dt>
+              <dt>{{ t().detailType }}</dt>
               <dd>{{ char.type }}</dd>
             </div>
           }
           <div class="detail__meta-item">
-            <dt>Género</dt>
+            <dt>{{ t().detailGender }}</dt>
             <dd>{{ char.gender }}</dd>
           </div>
           <div class="detail__meta-item">
-            <dt>Origen</dt>
+            <dt>{{ t().detailOrigin }}</dt>
             <dd>{{ char.origin.name }}</dd>
           </div>
           <div class="detail__meta-item">
-            <dt>Ubicación</dt>
+            <dt>{{ t().detailLocation }}</dt>
             <dd>{{ char.location.name }}</dd>
           </div>
         </dl>
@@ -64,7 +64,7 @@
     @if (episodes().length > 0) {
       <section class="detail__episodes" aria-labelledby="episodes-heading">
         <h2 id="episodes-heading" class="detail__section-title">
-          Episodios ({{ episodes().length }})
+          {{ t().episodes }} ({{ episodes().length }})
         </h2>
         <ul class="episodes-list" role="list">
           @for (ep of episodes(); track ep.id) {
@@ -80,7 +80,7 @@
   </article>
 } @else {
   <div class="detail-error" role="alert">
-    <p>No se encontró el personaje.</p>
-    <a routerLink="/characters">Volver a la lista</a>
+    <p>{{ t().characterNotFound }}</p>
+    <a routerLink="/characters">{{ t().backToCharacters }}</a>
   </div>
 }

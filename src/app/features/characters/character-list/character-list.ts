@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { RickAndMortyApiService, FavoritesService } from '../../../core/services';
+import { RickAndMortyApiService, FavoritesService, TranslationService } from '../../../core/services';
 import type { Character, CharacterFilters, ApiInfo } from '../../../core/models';
 import { CharacterFiltersComponent } from '../character-filters/character-filters';
 import { CharacterCardComponent } from '../character-card/character-card';
@@ -16,15 +16,22 @@ export class CharacterListComponent {
   private readonly api = inject(RickAndMortyApiService);
   private readonly favoritesService = inject(FavoritesService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
+  protected readonly t = this.translationService.t;
   protected readonly characters = signal<Character[]>([]);
   protected readonly pageInfo = signal<ApiInfo | null>(null);
   protected readonly currentPage = signal(1);
   protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
+  private readonly errorKey = signal<'notFound' | 'generic' | null>(null);
   private currentFilters: Partial<CharacterFilters> = {};
 
   protected readonly totalPages = computed(() => this.pageInfo()?.pages ?? 0);
+  protected readonly error = computed(() => {
+    const key = this.errorKey();
+    if (!key) return null;
+    return key === 'notFound' ? this.t().noCharactersFound : this.t().errorLoadingCharacters;
+  });
 
   constructor() {
     this.loadCharacters();
@@ -51,7 +58,7 @@ export class CharacterListComponent {
 
   private loadCharacters(): void {
     this.loading.set(true);
-    this.error.set(null);
+    this.errorKey.set(null);
 
     this.api.getCharacters(this.currentPage(), this.currentFilters).subscribe({
       next: (response) => {
@@ -63,9 +70,9 @@ export class CharacterListComponent {
         if (err.status === 404) {
           this.characters.set([]);
           this.pageInfo.set(null);
-          this.error.set('No se encontraron personajes con esos filtros.');
+          this.errorKey.set('notFound');
         } else {
-          this.error.set('Error al cargar personajes. Intenta de nuevo.');
+          this.errorKey.set('generic');
         }
         this.loading.set(false);
       },

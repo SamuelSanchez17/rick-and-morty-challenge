@@ -1,35 +1,39 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { FavoritesService } from '../../../core/services';
+import { FavoritesService, TranslationService } from '../../../core/services';
+import { LanguageToggleComponent } from '../language-toggle/language-toggle';
 
 @Component({
   selector: 'app-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, LanguageToggleComponent],
   template: `
-    <nav class="navbar" role="navigation" aria-label="Navegación principal">
+    <nav class="navbar" role="navigation" [attr.aria-label]="t().navLabel">
       <a class="navbar__brand" routerLink="/">
         <span class="navbar__logo" aria-hidden="true">🧪</span>
         Rick & Morty
       </a>
 
-      <ul class="navbar__links">
-        <li>
-          <a routerLink="/characters" routerLinkActive="active" aria-label="Ver personajes">
-            Personajes
-          </a>
-        </li>
-        <li>
-          <a routerLink="/favorites" routerLinkActive="active" aria-label="Ver favoritos">
-            Favoritos
-            @if (favoritesCount() > 0) {
-              <span class="navbar__badge" aria-label="{{ favoritesCount() }} favoritos">
-                {{ favoritesCount() }}
-              </span>
-            }
-          </a>
-        </li>
-      </ul>
+      <div class="navbar__right">
+        <ul class="navbar__links">
+          <li>
+            <a routerLink="/characters" routerLinkActive="active" [attr.aria-label]="t().viewCharactersLabel">
+              {{ t().navCharacters }}
+            </a>
+          </li>
+          <li>
+            <a routerLink="/favorites" routerLinkActive="active" [attr.aria-label]="t().viewFavoritesLabel">
+              {{ t().navFavorites }}
+              @if (favoritesCount() > 0) {
+                <span class="navbar__badge" [attr.aria-label]="favoritesCount() + ' ' + t().favoritesCountLabel">
+                  {{ favoritesCount() }}
+                </span>
+              }
+            </a>
+          </li>
+        </ul>
+        <app-language-toggle />
+      </div>
     </nav>
   `,
   styles: `
@@ -59,6 +63,12 @@ import { FavoritesService } from '../../../core/services';
 
     .navbar__logo {
       font-size: 1.5rem;
+    }
+
+    .navbar__right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
     }
 
     .navbar__links {
@@ -109,5 +119,8 @@ import { FavoritesService } from '../../../core/services';
 })
 export class NavbarComponent {
   private readonly favoritesService = inject(FavoritesService);
+  private readonly translationService = inject(TranslationService);
+
   protected readonly favoritesCount = this.favoritesService.favoritesCount;
+  protected readonly t = this.translationService.t;
 }

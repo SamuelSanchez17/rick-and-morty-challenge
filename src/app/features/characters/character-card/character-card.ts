@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output, inject, computed } from '@angular/core';
 import type { Character } from '../../../core/models';
-import { FavoritesService } from '../../../core/services';
+import { FavoritesService, TranslationService } from '../../../core/services';
 
 @Component({
   selector: 'app-character-card',
@@ -27,14 +27,14 @@ import { FavoritesService } from '../../../core/services';
         <p class="card__location">📍 {{ character().location.name }}</p>
 
         <div class="card__actions">
-          <button class="btn btn--detail" (click)="viewDetail.emit(character().id)" aria-label="Ver detalle de {{ character().name }}">
-            Ver detalle
+          <button class="btn btn--detail" (click)="viewDetail.emit(character().id)" [attr.aria-label]="t().viewDetailOf + ' ' + character().name">
+            {{ t().viewDetail }}
           </button>
           <button
             class="btn btn--fav"
             [class.btn--fav-active]="isFav()"
             (click)="toggleFav.emit(character())"
-            [attr.aria-label]="isFav() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            [attr.aria-label]="isFav() ? t().removeFromFavorites : t().addToFavorites"
             [attr.aria-pressed]="isFav()"
           >
             {{ isFav() ? '❤️' : '🤍' }}
@@ -179,16 +179,20 @@ export class CharacterCardComponent {
   readonly toggleFav = output<Character>();
 
   private readonly favoritesService = inject(FavoritesService);
+  private readonly translationService = inject(TranslationService);
+  protected readonly t = this.translationService.t;
 
   protected readonly isFav = computed(() => this.favoritesService.isFavorite(this.character().id));
 
   protected readonly statusLabel = computed(() => {
-    const map: Record<string, string> = { Alive: 'Vivo', Dead: 'Muerto', unknown: 'Desconocido' };
+    const t = this.t();
+    const map: Record<string, string> = { Alive: t.statusAlive, Dead: t.statusDead, unknown: t.statusUnknown };
     return map[this.character().status] ?? this.character().status;
   });
 
   protected readonly genderLabel = computed(() => {
-    const map: Record<string, string> = { Female: 'Femenino', Male: 'Masculino', Genderless: 'Sin género', unknown: 'Desconocido' };
+    const t = this.t();
+    const map: Record<string, string> = { Female: t.genderFemale, Male: t.genderMale, Genderless: t.genderGenderless, unknown: t.genderUnknown };
     return map[this.character().gender] ?? this.character().gender;
   });
 }
