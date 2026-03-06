@@ -55,6 +55,13 @@ export class CharacterDetailComponent implements OnInit {
     this.location.back();
   }
 
+  protected onImageError(event: Event): void {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    img.onerror = null;
+    img.src = '/notFound.jpeg';
+  }
+
   private loadCharacter(id: number): void {
     this.api.getCharacter(id).subscribe({
       next: (character) => {

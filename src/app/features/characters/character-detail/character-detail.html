@@ -11,6 +11,7 @@
         <img
           [src]="char.image"
           [alt]="'Foto de ' + char.name"
+          (error)="onImageError($event)"
           class="detail__image"
           width="300"
           height="300"

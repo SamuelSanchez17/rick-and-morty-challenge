@@ -21,6 +21,7 @@ import { FavoritesService, TranslationService } from '../../../core/services';
               <img
                 [src]="fav.image"
                 [alt]="'Foto de ' + fav.name"
+                (error)="onImageError($event)"
                 class="fav-card__image"
                 width="120"
                 height="120"
@@ -168,5 +169,12 @@ export class FavoritesListComponent {
 
   protected goToDetail(id: number): void {
     this.router.navigate(['/characters', id]);
+  }
+
+  protected onImageError(event: Event): void {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    img.onerror = null;
+    img.src = '/notFound.jpeg';
   }
 }

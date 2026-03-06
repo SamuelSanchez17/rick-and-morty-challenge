@@ -11,6 +11,7 @@ import { FavoritesService, TranslationService } from '../../../core/services';
         <img
           [src]="character().image"
           [alt]="'Foto de ' + character().name"
+          (error)="onImageError($event)"
           class="card__image"
           width="300"
           height="300"
@@ -195,4 +196,11 @@ export class CharacterCardComponent {
     const map: Record<string, string> = { Female: t.genderFemale, Male: t.genderMale, Genderless: t.genderGenderless, unknown: t.genderUnknown };
     return map[this.character().gender] ?? this.character().gender;
   });
+
+  protected onImageError(event: Event): void {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    img.onerror = null;
+    img.src = '/notFound.jpeg';
+  }
 }
