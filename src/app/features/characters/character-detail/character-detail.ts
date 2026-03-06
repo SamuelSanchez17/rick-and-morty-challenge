@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RickAndMortyApiService, FavoritesService, TranslationService } from '../../../core/services';
 import type { Character, Episode } from '../../../core/models';
@@ -12,6 +13,7 @@ import type { Character, Episode } from '../../../core/models';
 })
 export class CharacterDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
   private readonly api = inject(RickAndMortyApiService);
   private readonly favoritesService = inject(FavoritesService);
   private readonly translationService = inject(TranslationService);
@@ -47,6 +49,10 @@ export class CharacterDetailComponent implements OnInit {
     if (char) {
       this.favoritesService.toggleFavorite(char);
     }
+  }
+
+  protected goBack(): void {
+    this.location.back();
   }
 
   private loadCharacter(id: number): void {

@@ -1,7 +1,7 @@
 <section class="character-list">
   <h1 class="character-list__title">{{ t().charactersTitle }}</h1>
 
-  <app-character-filters (filtersChanged)="onFiltersChanged($event)" />
+  <app-character-filters [initialFilters]="currentFilters" (filtersChanged)="onFiltersChanged($event)" />
 
   @if (loading()) {
     <div class="character-list__loading" role="status" aria-live="polite">
@@ -32,7 +32,7 @@
       <nav class="pagination" [attr.aria-label]="t().paginationLabel">
         <button
           class="pagination__btn"
-          [disabled]="currentPage() <= 1"
+          [disabled]="loading() || currentPage() <= 1"
           (click)="goToPage(currentPage() - 1)"
           [attr.aria-label]="t().previousPageLabel"
         >
@@ -45,7 +45,7 @@
 
         <button
           class="pagination__btn"
-          [disabled]="currentPage() >= totalPages()"
+          [disabled]="loading() || currentPage() >= totalPages()"
           (click)="goToPage(currentPage() + 1)"
           [attr.aria-label]="t().nextPageLabel"
         >

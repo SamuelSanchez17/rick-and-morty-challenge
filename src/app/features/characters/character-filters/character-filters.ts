@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, output, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, inject, input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, merge } from 'rxjs';
@@ -150,6 +150,7 @@ import { TranslationService } from '../../../core/services';
   `,
 })
 export class CharacterFiltersComponent {
+  readonly initialFilters = input<Partial<CharacterFilters>>({});
   readonly filtersChanged = output<Partial<CharacterFilters>>();
 
   private readonly fb = new FormBuilder();
@@ -164,6 +165,11 @@ export class CharacterFiltersComponent {
   });
 
   constructor() {
+    const filters = this.initialFilters();
+    if (filters && Object.keys(filters).length > 0) {
+      this.form.patchValue(filters, { emitEvent: false });
+    }
+
     merge(this.form.controls.name.valueChanges, this.form.controls.species.valueChanges)
       .pipe(debounceTime(300), takeUntilDestroyed())
       .subscribe(() => this.emitFilters());

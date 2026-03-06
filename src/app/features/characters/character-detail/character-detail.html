@@ -4,7 +4,7 @@
   </div>
 } @else if (character(); as char) {
   <article class="detail">
-    <a routerLink="/characters" class="detail__back" [attr.aria-label]="t().backToListLabel">{{ t().backToList }}</a>
+    <button type="button" class="detail__back" (click)="goBack()" [attr.aria-label]="t().backToListLabel">{{ t().backToList }}</button>
 
     <div class="detail__header">
       <div class="detail__image-wrapper">
