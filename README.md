@@ -252,14 +252,28 @@ match /favorites/{docId} {
 - *"Agregar componente scroll-to-top: botón flotante visible al hacer scroll, con animación suave y diseño consistente con la paleta de colores existente en la app."*
 - *"Refactorizar estilos responsive: identifica componentes descuadrados en móvil y aplicar correcciones con flexbox/grid sin alterar la funcionalidad existente."*
 
-### Riesgos y mitigación
+### Qué acepté vs. qué reescribí
+- **Acepté**: La estructura base del `TranslationService` con signals y el diccionario inicial de claves ES/EN.
+- **Reescribí**: Los media queries responsive generados inicialmente usaban px fijos; los migré a rem y ajusté breakpoints según el comportamiento real en móvil.
+- **Rechacé**: Una sugerencia de usar NgRx para manejo de estado ya que signals nativos cubren el alcance sin añadir complejidad innecesaria.
 
-| Riesgo | Mitigación |
-|---|---|
-| Código generado sin entender | Revisión manual de cada cambio antes de commit; comprensión del "por qué" detrás de cada decisión |
-| Sobre-ingeniería por sugerencias de IA | Rechazar abstracciones innecesarias; mantener complejidad mínima viable |
-| Inconsistencia de estilo | Configuración de Prettier + EditorConfig como fuente de verdad; instrucciones persistentes en `.github/copilot-instructions.md` |
-| Dependencia en generación | IA como acelerador, no como reemplazo de entendimiento. Patrones fundamentales (signals, lazy loading, DI) se dominan independientemente |
+
+### Riesgos detectados y mitigación
+
+| Riesgo | Ejemplo concreto | Mitigación |
+|---|---|---|
+| **Performance** | El scroll listener generado se ejecutaba dentro de NgZone, disparando change detection en cada evento scroll | Se movió a `runOutsideAngular()` con `{ passive: true }` y se actualizó el signal solo al cambiar el estado de visibilidad |
+| **Seguridad** | Las reglas de Firestore generadas eran `allow read, write: if true` sin restricción alguna | Se añadió expiración temporal (`timestamp.date(2026, 4, 4)`) y se documentó la mejora con validación de campos para producción |
+| **Sesgos de IA** | Tendencia a sugerir soluciones sobre-abstraídas (NgRx, `@angular/fire`, wrappers genéricos) cuando signals nativos y el SDK directo eran suficientes | Se rechazaron sistemáticamente las abstracciones innecesarias; criterio: si no aporta valor medible al scope actual, no se añade |
+| **Código sin entender** | Atributos ARIA genéricos (`aria-label="button"`) que no aportaban contexto real al lector de pantalla | Revisión manual de cada cambio; se personalizaron los labels (ej: `aria-label="Ir a detalle de Rick Sanchez"`) |
+| **Inconsistencia de estilo** | Mezcla de comillas dobles/simples y formateo inconsistente en código generado | Prettier + EditorConfig como fuente de verdad; instrucciones persistentes en `.github/copilot-instructions.md` |
+| **Dependencia en generación** | Riesgo de usar IA como muleta y no entender los patrones subyacentes | IA como acelerador, no como reemplazo. Patrones fundamentales (signals, lazy loading, DI) se dominan independientemente |
+
+### Lecciones aprendidas y siguientes mejoras
+- **La IA acelera, no reemplaza**: El mayor valor estuvo en tareas repetitivas (74 claves i18n, ARIA en 15+ elementos, media queries en 6 componentes). Las decisiones de arquitectura (signals vs NgRx, SDK directo vs `@angular/fire`) requirieron criterio humano.
+- **Validar siempre en contexto real**: Código que "se ve correcto" en el editor puede fallar en móvil o en lectores de pantalla. Cada cambio generado se probó manualmente en viewport real y con herramientas AXE.
+- **Instrucciones persistentes mejoran la calidad**: Configurar `.github/copilot-instructions.md` con las convenciones del proyecto (OnPush, signals, no `any`, standalone implícito) redujo significativamente las correcciones manuales post-generación.
+- **Siguiente mejora**: Incorporar tests unitarios generados con IA como punto de partida, revisando cobertura de edge cases y evitando tests que solo validen la implementación obvia (happy path).
 
 ---
 
