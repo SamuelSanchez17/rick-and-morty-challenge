@@ -7,7 +7,7 @@
 [![Angular](https://img.shields.io/badge/Angular-21.2-DD0031?style=for-the-badge&logo=angular)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org)
 [![Firebase](https://img.shields.io/badge/Firebase-12.10-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com)
-[![Deploy](https://img.shields.io/badge/Live-enacment--rick--morty.web.app-00d4aa?style=for-the-badge&logo=googlechrome)](https://enacment-rick-morty.web.app?v=2)
+[![Deploy](https://img.shields.io/badge/Live-enacment--rick--morty.web.app-00d4aa?style=for-the-badge&logo=googlechrome)](https://enacment-rick-morty.web.app?v=1)
 
 </div>
 
@@ -118,6 +118,7 @@ favorites/{characterId}
 - **Signals** (`signal()`) para estado local de cada componente (characters, loading, error, page info)
 - **`computed()`** para estado derivado (totalPages, isFavorite, translated labels, status/gender labels)
 - **Firestore `onSnapshot`** para sincronización en tiempo real de favoritos → alimenta un `signal<Map>` en `FavoritesService`
+- **Query params** para persistencia de navegación: la página actual y filtros se sincronizan con la URL (`?page=10&name=rick&status=Alive`). Navegación con el botón atrás regresa al mismo estado, no al inicio más cercano.
 
 ### Routing con Lazy Loading
 
@@ -160,7 +161,31 @@ Todas las rutas están envueltas en `LayoutComponent` (navbar + outlet) cargado 
 
 ---
 
-## 🔐 Seguridad y Validaciones
+## � Retos Resueltos durante el Desarrollo
+
+### Problema: Rate Limiting 429 (Too Many Requests) en la API de Rick & Morty
+
+**Síntoma**: Al navegar rápidamente entre páginas (esp. a partir de la página 10+), la API devolvía errores `429 Too Many Requests` y luego errores CORS (`status: 0`).
+
+**Root cause**: 
+1. Sin throttling, cada clic de paginación disparaba una petición HTTP independiente
+2. Al hacer clic 5 veces en 1 segundo → 5 peticiones simultáneas a la API
+3. La API de Rick & Morty tiene un rate limit implícito que se gatilla
+4. En respuestas de error, la API omite cabeceras CORS, causando que el navegador reporte `status: 0`
+
+**Solución implementada** (3 capas):
+1. **Debounce + switchMap** en `CharacterListComponent`: 300ms de espera + `switchMap` cancela la petición anterior si llega una nueva. Clics rápidos se colapsan en una sola petición.
+2. **In-memory cache + Retry inteligente** en `RickAndMortyApiService`:
+   - Cache con TTL 5 minutos (datos de Rick & Morty son estáticos)
+   - Retry automático solo para `429` y `status: 0` con backoff exponencial (1s, 2s, 4s)
+   - Otros errores (`404`, `500`) propagan inmediatamente sin reintentar
+3. **Paginación virtual**: Combina 2 páginas API en 1 página UI (40 caracteres/página). Reduce de 42 a ~21 páginas totales → menos navegación general.
+
+**Resultado**: Navegación fluida incluso en mobile o conexiones lentas; sin errores 429 en uso normal.
+
+---
+
+## �🔐 Seguridad y Validaciones
 
 ### Firestore Rules
 
@@ -208,7 +233,9 @@ match /favorites/{docId} {
 
 | Técnica | Implementación |
 |---|---|
-| **Paginación** | Navegación prev/next con info de páginas de la API (`info.pages`, `info.count`) |
+| **Paginación virtual** | Cada "página UI" combina 2 páginas consecutivas de la API (40 personajes/página). Reduce de 42 a ~21 páginas totales sin afectar UX. |
+| **Caché en memoria** | In-memory cache con TTL de 5 minutos. Los datos de Rick & Morty son estáticos, así que se cachean para eliminar re-requests innecesarios al navegar atrás o cambiar filtros. |
+| **Retry inteligente** | Reintenta automáticamente `429` (Too Many Requests) y `status: 0` (CORS transitorio) con backoff exponencial (1s → 2s → 4s). Los errores reales (`404`, `500`, etc.) fallan inmediatamente. |
 | **Lazy loading** | Todas las feature routes cargan bajo demanda (`loadChildren` / `loadComponent`) |
 | **OnPush** | Todos los componentes usan `ChangeDetectionStrategy.OnPush` |
 | **`runOutsideAngular`** | Scroll listener del botón scroll-to-top opera fuera de NgZone |
@@ -330,7 +357,7 @@ firebase deploy
 ### Limitaciones actuales
 - **Sin autenticación**: Los favoritos son globales (cualquier visitante ve/modifica los mismos favoritos). No hay usuario individual.
 - **Sin tests unitarios**: Vitest está configurado pero no se incluyeron specs por alcance de tiempo. Es el gap técnico más notable.
-- **Bundle size**: El initial bundle (~527kB) supera ligeramente el budget de 500kB, principalmente por el Firebase JS SDK.
+- **Bundle size**: El initial bundle (~529kB) supera ligeramente el budget de 500kB, principalmente por el Firebase JS SDK.
 - **Sin SSR**: La app es SPA client-side only. El SEO inicial es limitado.
 
 ### Siguientes pasos
