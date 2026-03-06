@@ -253,7 +253,7 @@ match /favorites/{docId} {
 | **Contraste de color** | Todos los textos sobre fondos oscuros verificados con ratio ≥ 4.5:1 (colores ajustados: `#9090aa`, `#8aaa9e`, `#f06088`) |
 | **Navegación por teclado** | `:focus-visible` global con outline verde `#00d4aa` + offset; todos los botones e inputs enfocables |
 | **Roles ARIA** | `role="navigation"`, `role="search"`, `role="status"`, `role="alert"`, `role="list"`, `role="listitem"` |
-| **Atributos ARIA** | `aria-label` en 15+ elementos, `aria-live="polite"` en loading, `aria-pressed` en favoritos, `aria-labelledby` en secciones |
+| **Atributos ARIA** | `aria-label` aria-label en todos los elementos interactivos sin texto visible |
 | **Idioma del documento** | `<html lang>` actualizado dinámicamente via `effect()` según idioma seleccionado |
 | **Estados comunicados** | Loading, error y vacío anunciados a lectores de pantalla vía `aria-live` y `role="alert"` |
 
