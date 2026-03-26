@@ -1,5 +1,21 @@
 {
   "projects": {
     "default": "enacment-rick-morty"
-  }
+  },
+  "targets": {
+    "enacment-rick-morty": {
+      "hosting": {
+        "enacmentSite": [
+          "enacment-rick-morty"
+        ],
+        "directorySite": [
+          "directory-rick-morty"
+        ],
+        "directoySite": [
+          "directoy-rick-morty"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

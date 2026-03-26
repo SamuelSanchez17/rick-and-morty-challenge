@@ -7,7 +7,7 @@
 [![Angular](https://img.shields.io/badge/Angular-21.2-DD0031?style=for-the-badge&logo=angular)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org)
 [![Firebase](https://img.shields.io/badge/Firebase-12.10-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com)
-[![Deploy](https://img.shields.io/badge/Live-enacment--rick--morty.web.app-00d4aa?style=for-the-badge&logo=googlechrome)](https://enacment-rick-morty.web.app?)
+[![Deploy](https://img.shields.io/badge/Live-directory--rick--morty.web.app-00d4aa?style=for-the-badge&logo=googlechrome)](https://directory-rick-morty.web.app?)
 
 </div>
 
